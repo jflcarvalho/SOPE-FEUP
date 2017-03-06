@@ -1,0 +1,13 @@
+MACROS
+STDOUT_FILENO : "stream out"
+
+DIRECTORY
+cd : change workdirectory
+ls : show directory's and exiting files
+mkdir : new dir
+rmdir : remove dir
+
+FILES
+> : new file
+rm : remove file
+
