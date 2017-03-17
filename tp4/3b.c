@@ -3,20 +3,13 @@
 #include <signal.h>
 #include <unistd.h>
 #include <stdlib.h>
-/*
-struct sigaction {
-  void     (*sa_handler)(int);
-  void     (*sa_sigaction)(int, siginfo_t *, void *);
-  sigset_t   sa_mask;
-  int        sa_flags;
-  void     (*sa_restorer)(void);
-};
-*/
+#include <sys/wait.h>
+
 int step = 1;
 
 void sigusr_handler(int signo)
 {
-  printf("In SIGUSR handler ...\n");
+  //printf("In SIGUSR handler ...\n");
   if(signo == SIGUSR1){
     step = 1;
   }
@@ -44,11 +37,29 @@ int main(void)
     exit(1);
   }
 
-  int v = 0;
-  while(1){
-    v += step;
-    printf("%d\n", v);
-    sleep(1);
+  int pid = fork();
+  if(pid == 0){ /* CHILD */
+    int v = 0, count = 0;
+    while(1){
+      v += step;
+      printf("%d\n", v);
+      count++;
+      if(count == 50){
+        exit(0);
+      }
+
+      sleep(1);
+    }
+  }
+  else { /* PARENT */
+    int status;
+    while (1) {
+      if(waitpid(pid,&status, WNOHANG) == pid){
+        exit(0);
+      };
+      kill(pid, rand()%2? SIGUSR1 : SIGUSR2);
+      sleep(1);
+    }
   }
   exit(0);
 }
