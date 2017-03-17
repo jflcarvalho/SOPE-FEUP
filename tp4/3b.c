@@ -47,7 +47,6 @@ int main(void)
       if(count == 50){
         exit(0);
       }
-
       sleep(1);
     }
   }
