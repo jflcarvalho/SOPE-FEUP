@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <termios.h>
+#include <string.h>
 
 int step = 1;
 
@@ -42,7 +44,10 @@ int main(void)
     int v = 0, count = 0;
     while(1){
       v += step;
-      printf("%d\n", v);
+      char str[5];
+      sprintf(str, "%d", v);
+     	write(STDOUT_FILENO, str, strlen(str));
+     	write(STDOUT_FILENO, "\n", 1);
       count++;
       if(count == 50){
         exit(0);
