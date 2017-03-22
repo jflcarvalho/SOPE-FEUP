@@ -5,9 +5,13 @@
 #define WRITE 1
 #define READ 0
 
+typedef struct{
+  int left, right;
+} Pair;
+
 int main(void){
   int buff[2];
-  int intR[2];
+  Pair intR;
   pid_t pid;
   if (pipe(buff) < 0){
     fprintf(stderr, "Pipe Error\n");
@@ -19,22 +23,21 @@ int main(void){
   }
   if(pid > 0) {  //PARENT
     close(buff[READ]);
-    scanf("%d %d", &intR[0], &intR[1]);
-    write(buff[WRITE], intR, 2*sizeof(int));
+    scanf("%d %d", &intR.left, &intR.right);
+    write(buff[WRITE], &intR, sizeof(Pair));
   }
   else{  //CHILD
-    int intToRead[2];
+    Pair pairToRead;
     close(buff[WRITE]);
-    read(buff[READ], &intToRead[0], sizeof(int));
-    read(buff[READ], &intToRead[1], sizeof(int));
-    printf("Adição: %d\n", (intToRead[0]+intToRead[1]));
-    printf("Subtracao: %d\n", (intToRead[0]-intToRead[1]));
-    printf("Multiplicacao: %d\n", (intToRead[0]*intToRead[1]));
-    if(intToRead[1] == 0){
+    read(buff[READ], &pairToRead, sizeof(Pair));
+    printf("Adição: %d\n", (pairToRead.left+pairToRead.right));
+    printf("Subtracao: %d\n", (pairToRead.left-pairToRead.right));
+    printf("Multiplicacao: %d\n", (pairToRead.left*pairToRead.right));
+    if(pairToRead.right == 0){
       printf("Divisao: Error divisao por 0\n");
     }
     else{
-      printf("Divisao: %f\n", ((double)intToRead[0]/intToRead[1]));
+      printf("Divisao: %f\n", ((double)pairToRead.left/pairToRead.right));
     }
   }
   return 0;
